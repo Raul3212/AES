@@ -36,7 +36,7 @@ def shiftRows(sBox):
 
 
 def mixColumns():
-		print("Hahahahaha")
+	print("Hahahahaha")
 
 def main():
 	sBox = initSBox(16)
