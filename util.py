@@ -16,3 +16,6 @@ def text2matrix(text):
         else:
             matrix[int(i / 4)].append(byte)
     return matrix
+
+def hexMatrix(matrix):
+	return [[hex(x) for x in line] for line in matrix]
