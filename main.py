@@ -1,3 +1,5 @@
+from AES import *
+
 def main():
 	aes = AES64(None, key="olamundo") 
 	aes.runAES64()
