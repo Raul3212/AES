@@ -17,7 +17,12 @@ class AES64:
 	#key: string com 8 caracteres (8 bytes ou 64 bits)
 	def __init__(self, plaintxt, key):
 		self.__estado = initEstado(16)
-		self.__sBox = self.__initSBox(16)
+		self.__sBox = [
+				0b0000, 0b0001, 0b1001, 0b1110, 
+				0b1101, 0b1011, 0b0111, 0b0110,
+				0b1111, 0b0010, 0b1100, 0b0101,
+				0b1010, 0b0100, 0b0011, 0b1000, 
+		]
 		self.__key = key
 
 	def __initSBox(self, n):
