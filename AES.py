@@ -103,9 +103,12 @@ class AES64:
 		self.__estado = xorKey(self.__estado, self.__chavesRodada[rodada])
 
 	def runAES64(self):
-		self.__subBytes()
-		self.__shiftRows()
-		self.__mixColumns()
 		self.__keyExpasion()
 		self.__addRoundKey(0)
+		for rodada in range(10):
+			self.__subBytes()
+			self.__shiftRows()
+			self.__mixColumns()
+			self.__addRoundKey(rodada+1)
+			print("rodada {}".format(rodada))
 		print(self.__estado)
