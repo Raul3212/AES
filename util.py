@@ -20,3 +20,16 @@ def rotateList(lista, n):
 
 def hexMatrix(matrix):
 	return [[hex(x) for x in line] for line in matrix]
+
+def xorList(lista1, lista2):
+    listaXor = []
+    for i in range(0, len(lista1)):
+        listaXor.append(lista1[i] ^ lista2[i])
+    return listaXor
+
+def xorKey(estado, subChave):
+    newEstado = [[0 for i in range(4)] for j in range(4)]
+    for i in range(4):
+        for j in range(4):
+            newEstado[i][j] = estado[i][j] ^ subChave[i][j]
+    return newEstado
