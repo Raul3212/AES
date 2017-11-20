@@ -10,38 +10,37 @@ mixMatrix = [
 	[3, 1, 1, 2]
 ]
 
+sBox = (
+	0b0000, 0b0001, 0b1001, 0b1110, 
+	0b1101, 0b1011, 0b0111, 0b0110,
+	0b1111, 0b0010, 0b1100, 0b0101,
+	0b1010, 0b0100, 0b0011, 0b1000, 
+)
+
+RC = (0b0001, 0b0010, 0b0100, 0b1000, 0b0011, 0b0110, 0b1100, 0b1011, 0b0101, 0b1010)
+
 # Regra da multiplicação (Eq. 4.14)
 xtime = lambda a: (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
 
 class AES64:
+	global sBox
+	global RC
+	global mixMatrix
 	#key: string com 8 caracteres (8 bytes ou 64 bits)
 	def __init__(self, plaintxt, key):
 		self.__estado = initEstado(16)
-		self.__sBox = [
-				0b0000, 0b0001, 0b1001, 0b1110, 
-				0b1101, 0b1011, 0b0111, 0b0110,
-				0b1111, 0b0010, 0b1100, 0b0101,
-				0b1010, 0b0100, 0b0011, 0b1000, 
-		]
 		self.__key = key
-
-	def __initSBox(self, n):
-		sBox = []
-		for i in range(n):
-			sBox.append(i)
-		return sBox
 
 	def __subBytes(self):
 		for i in range(4):
 			for j in range(4):
-				self.__estado[i][j] = self.__sBox[self.__estado[i][j]]
+				self.__estado[i][j] = sBox[self.__estado[i][j]]
 		
 	def __shiftRows(self):
 		for i in range(len(self.__estado)):
 			self.__estado[i] = rotateList(self.__estado[i], i)
 
 	def __mixColumns(self):
-		global mixMatrix
 		newEstado = [[0 for i in range(4)] for j in range(4)]
 		for i in range(4):
 			for j in range(4):
@@ -92,12 +91,12 @@ class AES64:
 	def __subWord(self, lista):
 		newLista = copy.copy(lista)
 		for i in range(len(lista)):
-				newLista[i] = self.__sBox[lista[i]]
+				newLista[i] = sBox[lista[i]]
 		return newLista
 
 	def __Rcon(self, index):
 		#tem q ser calculada usando o polinomio 
-		RC = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+		
 		return [RC[index], 0, 0, 0]
 
 	def __addRoundKey(self, rodada):
