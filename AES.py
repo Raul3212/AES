@@ -105,10 +105,3 @@ class AES64:
 		self.__keyExpasion()
 		self.__addRoundKey(0)
 		print(self.__estado)
-
-def main():
-	aes = AES64(None, key="olamundo") 
-	aes.runAES64()
-
-if __name__ == '__main__':
-	main()
