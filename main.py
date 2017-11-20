@@ -1,7 +1,11 @@
 from AES import *
 
 def main():
-	aes = AES64(None, key="olamundo") 
+	print(" [i] Insira um texto de até 8 caracteres: ")
+	texto = input()
+	print(" [i] Insira uma chave de até 8 caracteres: ")
+	chave = input()
+	aes = AES64(plaintxt=texto[:8], key=chave[:8]) 
 	aes.runAES64()
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-import numpy as np
 from util import *
 import math as mt
 import copy
@@ -19,8 +18,8 @@ sBox = (
 
 RC = (0b0001, 0b0010, 0b0100, 0b1000, 0b0011, 0b0110, 0b1100, 0b1011, 0b0101, 0b1010)
 
-# Regra da multiplicação (Eq. 4.14)
-xtime = lambda a: (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
+# Regra da multiplicação para 64 bits
+xtime = lambda a: (((a << 1) ^ 0x3) & 0xF) if (a & 0x8) else (a << 1)
 
 class AES64:
 	global sBox
@@ -28,7 +27,7 @@ class AES64:
 	global mixMatrix
 	#key: string com 8 caracteres (8 bytes ou 64 bits)
 	def __init__(self, plaintxt, key):
-		self.__estado = initEstado(16)
+		self.__estado = self.__texto2Estado(plaintxt)
 		self.__key = key
 
 	def __subBytes(self):
@@ -102,13 +101,48 @@ class AES64:
 	def __addRoundKey(self, rodada):
 		self.__estado = xorKey(self.__estado, self.__chavesRodada[rodada])
 
+	def __texto2Estado(self, texto):
+		indexLinha = 0
+		indexColuna = 0
+		proxIndexLinha = False
+		estado = [[0 for i in range(4)] for j in range(4)]
+		for x in texto:
+			bin1Byte = format(ord(x), '08b')
+			f4Bits, s4Bits = bin1Byte[:(int(len(bin1Byte)/2))], bin1Byte[int((len(bin1Byte)/2)):]
+			estado[indexLinha][indexColuna] = int(f4Bits, 2)
+			estado[indexLinha][indexColuna+1] = int(s4Bits, 2)
+			indexColuna += 2
+			if indexColuna == 4:
+				indexColuna = 0
+			if proxIndexLinha == True:
+				indexLinha += 1
+			proxIndexLinha = not proxIndexLinha
+		return estado
+
+	def __estado2texto(self, estado):
+		texto = ""
+		for i in range(4):
+			for j in range(0,4,2):
+				fbin4bits = format(estado[i][j], '04b')
+				sbin4bits = format(estado[i][j+1], '04b')
+				total1Byte = fbin4bits + sbin4bits
+				caracter = str(chr(int(total1Byte, 2)))
+				texto = texto + caracter
+		return texto
+
 	def runAES64(self):
 		self.__keyExpasion()
 		self.__addRoundKey(0)
 		for rodada in range(10):
+			print(" [->] RODADA {}".format(rodada))
+			print(" [>>] SubBytes...")
 			self.__subBytes()
+			print(" [>>] ShiftRows...")
 			self.__shiftRows()
-			self.__mixColumns()
+			if rodada < 9:
+				print(" [>>] MixColumns...")
+				self.__mixColumns()
+			print(" [>>] Add RoundKey...")
 			self.__addRoundKey(rodada+1)
-			print("rodada {}".format(rodada))
-		print(self.__estado)
+		print("ESTADO FINAL:\n{}".format(self.__estado))
+		print("TEXTO FINAL:\n{}".format(self.__estado2texto(self.__estado)))
